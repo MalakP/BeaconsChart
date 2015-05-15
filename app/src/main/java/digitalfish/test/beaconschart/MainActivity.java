@@ -35,17 +35,17 @@ import digitalfish.test.beaconschart.Interfaces.BeaconDataSmoother;
 
 
 public class MainActivity extends Activity implements BeaconConsumer {
-    private int HISTORY_SIZE = 100;
+    private int HISTORY_SIZE = 100; // How many samples is shown on the chart
     @InjectView(R.id.chart)
     LineChart mChart;
     private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
     BeaconDataSmoother mBeaconDataSmoother;
 
-    String ESTIMOTE_IDENTIFIER = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
-    private final static Map<Integer, String> FRIENDLY_NAMES;
+    String ESTIMOTE_IDENTIFIER = "B9407F30-F5F8-466E-AFF9-25556B57FE6D"; // default estimote identifier
     boolean mIsKnownOnly = true;
     boolean mKeepScreenOn = false;
-    static {
+    private final static Map<Integer, String> FRIENDLY_NAMES;
+    static {// list containing majors numbers of beacons of interest
         FRIENDLY_NAMES = new HashMap<>();
         FRIENDLY_NAMES.put(61566, "b1");
         FRIENDLY_NAMES.put(788, "b2");
