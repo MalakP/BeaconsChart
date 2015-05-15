@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".MainActivity">
+    <item android:id="@+id/action_reset"
+          android:title="Reset"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+
+      <group android:checkableBehavior="all">
+            <item android:id="@+id/known_only"
+                  android:title="known only"
+                android:checked="true"/>
+
+          <item android:id="@+id/stay_awake"
+                android:title="stay awake"
+                android:checked="false"/>
+
+      </group>
+</menu>
