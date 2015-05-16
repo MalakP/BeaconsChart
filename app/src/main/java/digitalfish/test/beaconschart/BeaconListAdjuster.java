@@ -30,7 +30,7 @@ public class BeaconListAdjuster implements BeaconDataSmoother {
     public Collection<BeaconWithSmoothedDistance> getSmoothBeaconList(Collection<Beacon> pBeaconList){
 
             mListOfCollections.add(pBeaconList);
-            if(mListOfCollections == null || mListOfCollections.size()<1 || mListOfCollections.size()>SAMPLE_SIZE){
+            if(mListOfCollections.size()>SAMPLE_SIZE){
                 mListOfCollections.remove(0);
             }
 
