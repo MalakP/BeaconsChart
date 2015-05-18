@@ -56,6 +56,10 @@ public class MainActivity extends Activity implements BeaconConsumer {
         FRIENDLY_NAMES.put(32554, "b6");
     }
 
+    int mDataCount = 0;
+    Map<Beacon, List<Double>> mValuesMap = new HashMap<>();
+    ArrayList<String> mXVals = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +79,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
     protected void onDestroy() {
         super.onDestroy();
         beaconManager.unbind(this);
-
     }
 
     @Override
@@ -86,44 +89,38 @@ public class MainActivity extends Activity implements BeaconConsumer {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         switch (id){
             case R.id.action_reset:
-                valuesMap.clear();
-                dataCount = 0;
-                xVals.clear();
+                mValuesMap.clear();
+                mDataCount = 0;
+                mXVals.clear();
                 return true;
-
 
             case R.id.known_only:
                 mIsKnownOnly  = !mIsKnownOnly;
                 item.setChecked(mIsKnownOnly);
-                valuesMap.clear();
-                dataCount = 0;
-                xVals.clear();
-
+                mValuesMap.clear();
+                mDataCount = 0;
+                mXVals.clear();
                 return true;
 
             case R.id.stay_awake:
                 mKeepScreenOn = !mKeepScreenOn;
                 item.setChecked(mKeepScreenOn);
                 setKeepScreenOn(mKeepScreenOn);
-
                 return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -155,14 +152,12 @@ public class MainActivity extends Activity implements BeaconConsumer {
         }
     }
 
-    int dataCount = 0;
-    Map<Beacon, List<Double>> valuesMap = new HashMap<>();
-    ArrayList<String> xVals  = new ArrayList<>();
+
     synchronized private void PrepareChartData(Collection<BeaconWithSmoothedDistance> pSmoothBeaconList) {
 
-        if(dataCount<HISTORY_SIZE) {
-            dataCount++;
-            xVals.add(String.valueOf(dataCount));
+        if(mDataCount <HISTORY_SIZE) {
+            mDataCount++;
+            mXVals.add(String.valueOf(mDataCount));
         }
         for(BeaconWithSmoothedDistance bwsd: pSmoothBeaconList){
 
@@ -170,28 +165,28 @@ public class MainActivity extends Activity implements BeaconConsumer {
             if(mIsKnownOnly &&!FRIENDLY_NAMES.containsKey(bwsd.getBeacon().getId2().toInt()))
                 continue;
             List<Double> tempListOfDistances;
-            if(valuesMap.containsKey(bwsd.getBeacon())){
-                tempListOfDistances = valuesMap.get(bwsd.getBeacon());
+            if(mValuesMap.containsKey(bwsd.getBeacon())){
+                tempListOfDistances = mValuesMap.get(bwsd.getBeacon());
             }else
                 tempListOfDistances = new ArrayList<>();
 
             tempListOfDistances.add(bwsd.getDistance());
             if(tempListOfDistances.size()>HISTORY_SIZE){
                 tempListOfDistances.remove(0);
-                dataCount = HISTORY_SIZE;
+                mDataCount = HISTORY_SIZE;
             }
 
-            if(tempListOfDistances.size()<dataCount)
+            if(tempListOfDistances.size()< mDataCount)
                 tempListOfDistances.add(tempListOfDistances.get(tempListOfDistances.size()-1));
 
-            valuesMap.put(bwsd.getBeacon(), tempListOfDistances);
+            mValuesMap.put(bwsd.getBeacon(), tempListOfDistances);
             
 
         }
 
         //Create Lists of entries and fill it with values
         ArrayList<LineDataSet> dataSets = new ArrayList<>();
-        Iterator it = valuesMap.entrySet().iterator();
+        Iterator it = mValuesMap.entrySet().iterator();
         int j=0;
         while (it.hasNext()) {
 
@@ -201,7 +196,6 @@ public class MainActivity extends Activity implements BeaconConsumer {
             int i=0;
             for(Double td: (List<Double>)pair.getValue()){
                 tempValues.add(new Entry((float)td.doubleValue(),i++ ));
-
             }
 
             String bName = ((Beacon)pair.getKey()).getId2().toString();
@@ -255,14 +249,14 @@ public class MainActivity extends Activity implements BeaconConsumer {
             dataSets.add(currentBeaconDataSet);
         }
 
-        if(xVals!=null ) {
+        if(mXVals !=null ) {
             try {
-                LineData data = new LineData(xVals, dataSets);
+                LineData data = new LineData(mXVals, dataSets);
                 mChart.setData(data);
                 mChart.invalidate();
             }catch (Exception e){
                 Log.e("BC", "problem updating chart "+e.getMessage());
-                xVals.add("0");
+                mXVals.add("0");
             }
         }
     }
