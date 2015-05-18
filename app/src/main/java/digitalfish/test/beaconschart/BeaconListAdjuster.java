@@ -27,6 +27,12 @@ public class BeaconListAdjuster implements BeaconDataSmoother {
     private int bufforSize = 4;
     final static int SAMPLE_SIZE = 5;
 
+    /**
+     * Adds provided beacon list to Class beacon list collection which are used to
+     * calculate averaged result (beacon presence and distance)
+     * @param pBeaconList list of beacons to add to class collection
+     * @return list of BeaconWithSmoothedDistance containing beacon data and averaged distance
+     */
     public Collection<BeaconWithSmoothedDistance> getSmoothBeaconList(Collection<Beacon> pBeaconList){
 
             mListOfCollections.add(pBeaconList);
@@ -79,6 +85,11 @@ public class BeaconListAdjuster implements BeaconDataSmoother {
         return lResultList;
     }
 
+    /**
+     * Calculates meadian of provided list od Double. It sorts the list in first place
+     * @param pMedianBuffor unsorted list of Double
+     * @return median of provided list of Double
+     */
     private double median(List<Double> pMedianBuffor){
         List<Double>a = new ArrayList<>(pMedianBuffor);
         Collections.sort(a);
